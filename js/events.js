@@ -1,17 +1,17 @@
 choco.subscribe('loadListener', 'ready', function (data) {
-    this.gameData.clans['uzumaki'] = this.__clan({
+    this.gameData.clans['uzumaki'] = new this.__clan({
 		name : 'Uzumaki'
 	});
 
-	this.gameData.clans['uchiha'] = this.__clan({
+	this.gameData.clans['uchiha'] = new this.__clan({
 		name : 'Uchiha'
 	});
 
-	this.gameData.clans['hyuga'] = this.__clan({
+	this.gameData.clans['hyuga'] = new this.__clan({
 		name : 'Hyuga'
 	});
 
-	this.gameData.villages['leaf'] = this.__village({
+	this.gameData.villages['leaf'] = new this.__village({
 		name : 'Leaf'
 	})
 		.addClan(this.gameData.clans['uzumaki'])
@@ -26,6 +26,7 @@ choco.subscribe('loadListener', 'ready', function (data) {
         this.ele('.__actionDetails').innerHTML = this.template('actionDetails');
         this.ele('.__actionBar').innerHTML = this.template('bar', {w: 75, p: 0});
         this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+this.gameData.player.action.description+'"');
+        if(this.player.rank === 0) { this.ele('.__sidebarOther').innerHTML = this.template('sidebarAcademy')}
     } else {
         document.body.innerHTML = this.template('createCharacter');
     }
@@ -38,7 +39,7 @@ choco.subscribe('clickListener', 'beginGame', function () {
     var name = this.ele('.__char_create_name').value;
     var clan = this.ele('.__char_create_clan').value;
 
-    this.player = this.gameData.shinobis[name.toLocaleLowerCase().replace(/ /g, '')] = this.__shinobi({
+    this.player = this.gameData.shinobis[name.toLocaleLowerCase().replace(/ /g, '')] = new this.__shinobi({
         name: name
     });
 
@@ -59,6 +60,7 @@ choco.subscribe('clickListener', 'beginGame', function () {
 
     document.body.innerHTML = this.template('gameContainer');
     this.ele('.__sidebar').innerHTML = this.template('sidebar');
+	this.ele('.__sidebarOther').innerHTML = this.template('sidebarAcademy')
     this.ele('.__actionDetails').innerHTML = this.template('actionDetails');
     this.ele('.__actionBar').innerHTML = this.template('bar', {w: 75, p: 0});
     this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+this.gameData.player.action.description+'"');
@@ -155,45 +157,58 @@ choco.subscribe('playerTrain', 'trainJutsu', function (data) {
 })
 
 choco.subscribe('clickListener', 'academyAttempt', function () {
-	var str = '';
 	this.gameData.delta = +(new Date)-1;
 
 	var player = this.gameData.player;
-	var difficulty = Math.random()*15+15;
-	var p_jutsu = this.player.jutsus.bunshinnojutsu;
-	var p_cc    = this.player.skills.chakracontrol;
-	var jpower = p_jutsu.level+(p_jutsu.exp[0]/p_jutsu.exp[1]);
-	var ccpower = p_cc.level+(p_cc.exp[0]/p_cc.exp[1]);
 
-	var w = Math.random()*ccpower+jpower;
-	var q = difficulty-w;
-	if (q <= 0 || w/2 > q) {
-		if (this.useJutsu(this.player.id,'bunshinnojutsu') ) {
-			player.action = {
-				description : 'Desperately trying to pass Academy Exam...'
-				, timer		: [0, 6000]
-				, active	: true
-				, tick		: [{
-                    from    : 1500
-                    , once  : true
-                    , fun   : function (action) {
-    					action.description = 'Performing Bunshi no Jutsu'
-    					this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
+	if (this.useJutsu(this.player.id,'bunshinnojutsu') ) {
+		player.action = {
+			description : 'Desperately trying to pass Academy Exam...'
+			, timer		: [0, 6000]
+			, active	: true
+			, tick		: [{
+                from    : 1500
+                , once  : true
+                , fun   : function (action) {
+					action.description = 'Performing Bunshi no Jutsu'
+					this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
+                    var difficulty = Math.random()*15+15;
+                	var p_jutsu = this.player.jutsus.bunshinnojutsu;
+                	var p_cc    = this.player.skills.chakracontrol;
+                	var jpower = p_jutsu.level+(p_jutsu.exp[0]/p_jutsu.exp[1]);
+                	var ccpower = p_cc.level+(p_cc.exp[0]/p_cc.exp[1]);
+
+                	var w = Math.random()*ccpower+jpower;
+                	var q = difficulty-w;
+                	if (q <= 0 || w/2 > q) {
+                        player.action.tick.push({
+                            from    : 3000
+                            , once  : true
+                            , fun   : function (action) {
+            					action.description = 'High-fiveing with clone'
+            					this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
+                            }
+                        });
+                        player.action.done = function () {
+                            //this.player.rank++;
+                        }
+                    } else {
+                        player.action.tick.push({
+                            from    : 3000
+                            , once  : true
+                            , fun   : function (action) {
+            					action.description = 'Looking at his small pale clone...'
+            					this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
+                            }
+                        })
+                        player.action.done = function () {
+
+                        }
                     }
-                }, {
-                    from    : 3000
-                    , once  : true
-                    , fun   : function (action) {
-						action.description = 'High-fiveing with clone'
-						this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
-                    }
-                }]
-				, done		: function (action) {
-				}
-			}
-			this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
+                }
+            }]
 		}
-
+		this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
 	}
 
 })
