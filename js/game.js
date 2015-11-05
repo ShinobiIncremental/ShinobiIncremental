@@ -17,15 +17,15 @@ choco.define('affinities', ['fire', 'earth', 'water', 'wind', 'lighting'])
 
 choco.define('skills', function(){
     return {
-        'kunai' : this.__skill({
+        'kunai' : new this.__skill({
             name: 'Kunai',
             trainDescription: 'Learning to stab with Kunais'
         })
-        , 'shuriken' : this.__skill({
+        , 'shuriken' : new this.__skill({
             name: 'Shuriken'
             , trainDescription: 'Learning how to throw Shurikens'
         })
-        , 'chakracontrol' : this.__skill({
+        , 'chakracontrol' : new this.__skill({
             name: 'Chakra Control'
             , trainDescription: 'Improving Chakra Control'
         })
@@ -34,7 +34,7 @@ choco.define('skills', function(){
 
 choco.define('jutsus', function(){
     return {
-        'bunshinnojutsu' : this.__jutsu({
+        'bunshinnojutsu' : new this.__jutsu({
             name: 'Bunshin no Jutsu'
             , trainDescription: 'Desperately trying to prepare for Academy Exam...'
 			, chakra: 37
@@ -64,6 +64,11 @@ choco.define('gameData', {
     , villages : {
 
     }
+});
+
+choco.define('names', {
+    f: ['girly'],
+    m: ['lad']
 })
 
 choco.fun('affinitiesDice', function () {
@@ -115,17 +120,17 @@ choco.fun('loadGame', function () {
 
         var village = this.gameData.villages[key];
 
-        this.gameData.villages[key] = this.__village(village);
+        this.gameData.villages[key] = new this.__village(village);
     }
 
     for ( var key in this.gameData.clans ) {
         var clan = this.gameData.clans[key];
-        this.gameData.clans[key] = this.__clan(clan);
+        this.gameData.clans[key] = new this.__clan(clan);
     }
 
     for ( var key in this.gameData.shinobis ) {
         var shinobi = this.gameData.shinobis[key];
-        this.gameData.shinobis[key] = this.__shinobi(shinobi);
+        this.gameData.shinobis[key] = new this.__shinobi(shinobi);
     }
 })
 
@@ -149,7 +154,6 @@ choco.fun('updateLoop', function () {
             if (player.action.tick !== undefined && player.action.tick instanceof Function) {
                 player.action.tick.call(this, player.action);
             } else if(player.action.tick !== undefined && player.action.tick instanceof Array) {
-
                 var len = player.action.tick.length;
                 for (var i = 0 ; i < len ; i++) {
                     var t = player.action.tick[i];
@@ -158,6 +162,7 @@ choco.fun('updateLoop', function () {
                         if (t.once) {
                             player.action.tick.splice(t,1)
                             len--;
+                            i--;
                         }
                     }
                 }
