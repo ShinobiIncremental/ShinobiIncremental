@@ -61,7 +61,7 @@ choco.subscribe('clickListener', 'beginGame', function () {
     this.ele('.__sidebar').innerHTML = this.template('sidebar');
     this.ele('.__actionDetails').innerHTML = this.template('actionDetails');
     this.ele('.__actionBar').innerHTML = this.template('bar', {w: 75, p: 0});
-    this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+this.player.action.description+'"');
+    this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+this.gameData.player.action.description+'"');
     this.saveGame();
 });
 
