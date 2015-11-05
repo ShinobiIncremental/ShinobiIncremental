@@ -24,6 +24,10 @@ var choco = (function () {
 	window.addEventListener('load', function (e) {
 		choco = 'Shinobi Incremental by /r/9thHokageHimawari'
 
+        this.define = define;
+        this.defineo = defineo;
+        this.fun = fun;
+        this.klass = klass;
 		this.publish = publish;
 		this.subscribe = subscribe;
 		this.ele = ele;
@@ -142,11 +146,48 @@ var choco = (function () {
     fun = o.bind(__private)
 
     function klass (name, value) {
-        this['__'+name] === undefined
-		? this['__'+name] = value
-		: void 0;
-		return this['__'+name];
-    }
+	    var klass_name = arguments[0],
+	        klass_props = arguments.length === 3
+	            ? arguments[2]
+	            : arguments[1],
+	        klass_inherit = arguments.length === 3 && this[arguments[1]] !== undefined
+	            ? this[arguments[1]]
+	            : undefined,
+	        klass_construct = klass_props['constructor'] !== undefined
+	            ? klass_props['constructor']
+	            : undefined;
+	    this[klass_name] = function () {
+	        klass_inherit !== undefined
+	            ? klass_inherit.apply(this, arguments)
+	            : void 0;
+	        klass_construct !== undefined
+	            ? klass_construct.apply(this, arguments)
+	            : void 0;
+	        return this;
+	    }
+	    klass_inherit !== undefined
+	        ? this[klass_name].prototype = new klass_inherit()
+	        : void 0;
+	    this[klass_name].prototype.constructor = this[klass_name];
+	    for (var key in klass_props) {
+	        if (key !== 'constructor') {
+	            this[klass_name].prototype[key] = this[klass_name].prototype[key] !== undefined
+	                ? (function () {
+	                        var o_prop = this[klass_name].prototype[key];
+	                        return function(){
+	                            o_prop.apply(this,arguments);
+	                            klass_props[key].apply(this,arguments);
+	                        }
+	                    })()
+	                : klass_props[key];
+	        }
+	    }
+	    if (klass_props.override !== undefined) {
+	        for (var key in klass_props.override) {
+	            this[klass_name].prototype[key] = klass_props.override[key];
+	        }
+	    }
+	}
     var o = klass;
     klass = o.bind(__private)
     /*function define (name, value) {
@@ -166,13 +207,12 @@ var choco = (function () {
     var o = template;
     template = o.bind(__private);
 
-    function observe () {
+    function defineo () {
         var value = null;
-        var obj = arguments[0] !== undefined ? arguments[0] : this;
-        var name = arguments[1] !== undefined ? arguments[1] : '';
-        var dValue = arguments[2] !== undefined ? arguments[2] : null;
-        var callback = arguments[3] !== undefined ? arguments[3] : undefined;
-        Object.defineProperty(arguments[0], arguments[1], {
+        var name = arguments[0] !== undefined ? arguments[0] : '';
+        var dValue = arguments[1] !== undefined ? arguments[1] : null;
+        var callback = arguments[2] !== undefined ? arguments[2] : undefined;
+        Object.defineProperty(this, arguments[0], {
             get     : function () { return value; }
             , set   : function (newValue) {
                 callback !== undefined
@@ -184,8 +224,8 @@ var choco = (function () {
         obj[name] = dValue
         return obj[name];
     }
-    var o = observe;
-    observe = o.bind(__private);
+    var o = defineo;
+    defineo = o.bind(__private);
 
 	return {
 		subscribe 	: subscribe
