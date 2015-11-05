@@ -161,54 +161,53 @@ choco.subscribe('clickListener', 'academyAttempt', function () {
 
 	var player = this.gameData.player;
 
-	if (this.useJutsu(this.player.id,'bunshinnojutsu') ) {
-		player.action = {
-			description : 'Desperately trying to pass Academy Exam...'
-			, timer		: [0, 6000]
-			, active	: true
-			, tick		: [{
-                from    : 1500
-                , once  : true
-                , fun   : function (action) {
-					action.description = 'Performing Bunshi no Jutsu'
-					this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
-                    var difficulty = Math.random()*15+15;
-                	var p_jutsu = this.player.jutsus.bunshinnojutsu;
-                	var p_cc    = this.player.skills.chakracontrol;
-                	var jpower = p_jutsu.level+(p_jutsu.exp[0]/p_jutsu.exp[1]);
-                	var ccpower = p_cc.level+(p_cc.exp[0]/p_cc.exp[1]);
+	player.action = {
+		description : 'Desperately trying to pass Academy Exam...'
+		, timer		: [0, 6000]
+		, active	: true
+		, tick		: [{
+            from    : 1500
+            , once  : true
+            , fun   : function (action) {
+				action.description = 'Performing Bunshi no Jutsu'
+				this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
+                var difficulty = Math.random()*15+15;
+            	var p_jutsu = this.player.jutsus.bunshinnojutsu;
+            	var p_cc    = this.player.skills.chakracontrol;
+            	var jpower = p_jutsu.level+(p_jutsu.exp[0]/p_jutsu.exp[1]);
+            	var ccpower = p_cc.level+(p_cc.exp[0]/p_cc.exp[1]);
 
-                	var w = Math.random()*ccpower+jpower;
-                	var q = difficulty-w;
-                	if (q <= 0 || w/2 > q) {
-                        player.action.tick.push({
-                            from    : 3000
-                            , once  : true
-                            , fun   : function (action) {
-            					action.description = 'High-fiveing with clone'
-            					this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
-                            }
-                        });
-                        player.action.done = function () {
-                            //this.player.rank++;
+            	var w = Math.random()*ccpower+jpower;
+            	var q = difficulty-w;
+            	if (q <= 0 || w/2 > q) {
+                    player.action.tick.push({
+                        from    : 3000
+                        , once  : true
+                        , fun   : function (action) {
+        					action.description = 'High-fiveing with clone'
+        					this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
                         }
-                    } else {
-                        player.action.tick.push({
-                            from    : 3000
-                            , once  : true
-                            , fun   : function (action) {
-            					action.description = 'Looking at his small pale clone...'
-            					this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
-                            }
-                        })
-                        player.action.done = function () {
+                    });
+                    player.action.done = function () {
+                        //this.player.rank++;
+                    }
+                } else {
+                    player.action.tick.push({
+                        from    : 3000
+                        , once  : true
+                        , fun   : function (action) {
+        					action.description = 'Looking at his small pale clone...'
+        					this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
+                        }
+                    })
+                    player.action.done = function () {
 
-                        }
                     }
                 }
-            }]
-		}
-		this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
+            }
+        }]
 	}
+	this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
 
 })
+
