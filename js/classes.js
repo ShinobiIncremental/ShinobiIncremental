@@ -1,6 +1,5 @@
-choco.class('shinobi', (function () {
-
-    function __constructor () {
+choco.class('__shinobi', {
+    constructor : function (argument) {
         var obj = arguments[0];
 
         this.name = obj.name !== undefined ? obj.name : '';
@@ -18,9 +17,7 @@ choco.class('shinobi', (function () {
 		this.village = obj.village !== undefined ? obj.village : '';
 
         return this;
-    }
-
-    __constructor.prototype.addSkills = function () {
+    }, addSkills : function () {
         if(arguments[0] instanceof Array) {
             var len = arguments[0].length;
             for (var i = 0 ; i < len ; i++) {
@@ -45,9 +42,7 @@ choco.class('shinobi', (function () {
             }
         }
 		return this;
-	}
-
-	__constructor.prototype.addJutsus = function () {
+	}, addJutsus : function () {
         if(arguments[0] instanceof Array) {
             var len = arguments[0].length;
             for (var i = 0 ; i < len ; i++) {
@@ -73,13 +68,11 @@ choco.class('shinobi', (function () {
         }
 		return this;
 	}
+});
 
-    return function () {return new __constructor(arguments[0])};
-})());
+choco.class('__village', {
 
-choco.class('village', (function () {
-
-    function __constructor () {
+    constructor : function ( ){
         var obj = arguments[0];
 
         this.name = obj.name !== undefined ? obj.name : '';
@@ -87,21 +80,17 @@ choco.class('village', (function () {
 		this.clans =  obj.clans !== undefined ? obj.clans : [];
 
 		return this;
-    }
-
-    __constructor.prototype.addClan = function (clan) {
+    }, addClan : function (clan) {
         this.clans.push(clan.id);
         clan.village = this.id;
 
 		return this;
 	}
+});
 
-    return function () {return new __constructor(arguments[0])};
-})());
+choco.class('__clan', {
 
-choco.class('clan', (function () {
-
-    function __constructor () {
+    constructor : function () {
         var obj = arguments[0];
 
         this.name = obj.name !== undefined ? obj.name : '';
@@ -110,22 +99,17 @@ choco.class('clan', (function () {
         this.village = obj.village !== undefined ? obj.village : '';
 
 		return this;
-    }
-
-    __constructor.prototype.addMember = function (shinobi) {
+    }, addMember : function (shinobi) {
         this.members.push(shinobi.id);
         shinobi.clan = this.id
         shinobi.village = this.village;
 
 		return this;
 	}
+});
 
-    return function () {return new __constructor(arguments[0])};
-})());
-
-choco.class('skill', (function () {
-
-    function __constructor () {
+choco.class('__skill', {
+    constructor : function () {
         var obj = arguments[0];
 
         this.name = obj.name !== undefined ? obj.name : '';
@@ -133,13 +117,11 @@ choco.class('skill', (function () {
 		this.trainDescription = obj.trainDescription !== undefined ? obj.trainDescription : '';
 		return this;
     }
+});
 
-    return function () {return new __constructor(arguments[0])};
-})());
+choco.class('__jutsu', {
 
-choco.class('jutsu', (function () {
-
-    function __constructor () {
+    constructor : function () {
         var obj = arguments[0];
 
         this.name = obj.name !== undefined ? obj.name : '';
@@ -149,6 +131,4 @@ choco.class('jutsu', (function () {
 
 		return this;
     }
-
-    return function () {return new __constructor(arguments[0])};
-})());
+});
