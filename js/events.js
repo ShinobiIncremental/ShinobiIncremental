@@ -100,68 +100,54 @@ choco.subscribe('clickListener', 'piCollapse', function (data) {
 choco.subscribe('playerTrain', 'trainSkill', function (data) {
 	var player = this.gameData.player;
 	var skill = this.player.skills[data.skill];
-	if (player.action.active) {
-		return -1
-	} else {
-		player.action = {
-			description : this.skills[skill.id].trainDescription !== undefined? this.skills[skill.id].trainDescription : 'Learning how to use ' + skill.name
-			, timer		: [0, 1000+skill.level*750]
-			, active	: true
-			, done		: function () {
-				skill.exp[0] = (skill.exp[0]+100*( ((Math.random()*4+3)*0.1*skill.level*1.1) ).toFixed(2))|0;
-				if (skill.exp[0] >= skill.exp[1]) {
-					skill.exp[0] -= skill.exp[1];
-					skill.exp[1] = Math.abs(Math.tan(Math.PI/180*skill.level)*10000|0)
-					skill.level++;
-					if(skill.level === 91) {
-						// Skill mastery
-					}
-
+	this.performAction({
+		description : this.skills[skill.id].trainDescription !== undefined? this.skills[skill.id].trainDescription : 'Learning how to use ' + skill.name
+		, timer		: [0, 1000+skill.level*750]
+		, active	: true
+		, done		: function () {
+			skill.exp[0] = (skill.exp[0]+100*( ((Math.random()*4+3)*0.1*skill.level*1.1) ).toFixed(2))|0;
+			if (skill.exp[0] >= skill.exp[1]) {
+				skill.exp[0] -= skill.exp[1];
+				skill.exp[1] = Math.abs(Math.tan(Math.PI/180*skill.level)*10000|0)
+				skill.level++;
+				if(skill.level === 91) {
+					// Skill mastery
 				}
-				this.gameData.tmp.ele.innerHTML = this.template('skillRow', skill);
-	            this.saveGame();
+
 			}
+			this.gameData.tmp.ele.innerHTML = this.template('skillRow', skill);
+            this.saveGame();
 		}
-		this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
-	}
+	})
 })
 
 choco.subscribe('playerTrain', 'trainJutsu', function (data) {
 	var player = this.gameData.player;
 	var jutsu = this.gameData.shinobis[player.shinobi].jutsus[data.jutsu];
 
-	if (player.action.active) {
-		return -1;
-	} else {
-		player.action = {
-			description : this.jutsus[jutsu.id].trainDescription !== undefined? this.jutsus[jutsu.id].trainDescription : 'Learning how to use ' + jutsu.name
-			, timer		: [0, 1000+jutsu.level*750]
-			, active	: true
-			, done		: function () {
-				jutsu.exp[0] = (jutsu.exp[0]+100*( ((Math.random()*4+3)*0.1*jutsu.level*1.1) ).toFixed(2))|0;
-				if (jutsu.exp[0] >= jutsu.exp[1]) {
-					jutsu.exp[0] -= jutsu.exp[1];
-					jutsu.exp[1] = Math.abs(Math.tan(Math.PI/180*jutsu.level)*10000|0)
-					jutsu.level++;
-					if(jutsu.level === 91) {
-						// Skill mastery
-					}
-
+	this.performAction({
+		description : this.jutsus[jutsu.id].trainDescription !== undefined? this.jutsus[jutsu.id].trainDescription : 'Learning how to use ' + jutsu.name
+		, timer		: [0, 1000+jutsu.level*750]
+		, active	: true
+		, done		: function () {
+			jutsu.exp[0] = (jutsu.exp[0]+100*( ((Math.random()*4+3)*0.1*jutsu.level*1.1) ).toFixed(2))|0;
+			if (jutsu.exp[0] >= jutsu.exp[1]) {
+				jutsu.exp[0] -= jutsu.exp[1];
+				jutsu.exp[1] = Math.abs(Math.tan(Math.PI/180*jutsu.level)*10000|0)
+				jutsu.level++;
+				if(jutsu.level === 91) {
+					// Skill mastery
 				}
-				this.gameData.tmp.ele.innerHTML = this.template('jutsuRow', jutsu);
-				this.saveGame();
+
 			}
+			this.gameData.tmp.ele.innerHTML = this.template('jutsuRow', jutsu);
+			this.saveGame();
 		}
-		this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
-	}
+	})
 })
 
 choco.subscribe('clickListener', 'academyAttempt', function () {
-	this.gameData.delta = +(new Date)-1;
-
-	var player = this.gameData.player;
-
-	player.action = {
+	this.performAction({
 		description : 'Desperately trying to pass Academy Exam...'
 		, timer		: [0, 6000]
 		, active	: true
@@ -170,7 +156,7 @@ choco.subscribe('clickListener', 'academyAttempt', function () {
             , once  : true
             , fun   : function (action) {
 				action.description = 'Performing Bunshi no Jutsu'
-				this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
+				this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+action.description+'"');
                 var difficulty = Math.random()*15+15;
             	var p_jutsu = this.player.jutsus.bunshinnojutsu;
             	var p_cc    = this.player.skills.chakracontrol;
@@ -180,34 +166,32 @@ choco.subscribe('clickListener', 'academyAttempt', function () {
             	var w = Math.random()*ccpower+jpower;
             	var q = difficulty-w;
             	if (q <= 0 || w/2 > q) {
-                    player.action.tick.push({
+                    action.tick.push({
                         from    : 3000
                         , once  : true
                         , fun   : function (action) {
         					action.description = 'High-fiveing with clone'
-        					this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
+        					this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+action.description+'"');
                         }
                     });
-                    player.action.done = function () {
+                    action.done = function () {
                         //this.player.rank++;
                     }
                 } else {
-                    player.action.tick.push({
+                    action.tick.push({
                         from    : 3000
                         , once  : true
                         , fun   : function (action) {
         					action.description = 'Looking at his small pale clone...'
-        					this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
+        					this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+action.description+'"');
                         }
-                    })
-                    player.action.done = function () {
+                    });
+
+                    action.done = function () {
 
                     }
                 }
             }
         }]
-	}
-	this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
-
+	})
 })
-
