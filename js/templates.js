@@ -68,11 +68,7 @@ choco.addTemplate('sidebar', '<table style="width:100%">\
         </table></div>\
     {{end if}}\
 	<hr></hr>\
-	<span><strong>Academy</strong></span>\
-	<table style="width:100%">\
-		<tr choco-pubtopic="academyAttempt"><td>Attempt to pass</td><td style="text-align: right"></td></tr>\
-		<tr><td></td><td style="text-align: right"></td></tr>\
-	</table>');
+    <div class="__sidebarOther"></div>');
 
 choco.addTemplate('actionDetails', '<table style="width: 100%">\
     <tr>\
@@ -85,6 +81,12 @@ choco.addTemplate('actionDetails', '<table style="width: 100%">\
         <td class="__actionDescription" colspan=2 style="text-align:center"></td>\
     </tr>\
 </table>');
+
+choco.addTemplate('sidebarAcademy', '<span><strong>Academy</strong></span>\
+<table style="width:100%">\
+    <tr choco-pubtopic="academyAttempt"><td>Attempt to pass</td><td style="text-align: right"></td></tr>\
+    <tr><td></td><td style="text-align: right"></td></tr>\
+</table>')
 
 choco.addTemplate('skillRow', '<tr choco-pubtopic="trainSkill" choco-pubdata="{{data.id}}"><td>{{this.skills[data.id].name}}</td><td style="text-align: right">{{data.level}} ({{data.exp[0]}}/{{data.exp[1]}})</td></tr>');
 
