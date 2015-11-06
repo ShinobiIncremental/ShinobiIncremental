@@ -134,6 +134,25 @@ choco.fun('loadGame', function () {
     }
 })
 
+choco.fun('performAction', function() {
+	var player 	= this.gameData.player;
+	if (!player.action.active) {
+		this.gameData.delta = +(new Date)-1;
+
+		var obj		= arguments[0];
+
+		player.action = {
+			description : obj.description 	!== undefined ? obj.description : ''
+			, timer		: obj.timer			!== undefined ? obj.timer		: [0,10000]
+			, active	: true
+			, tick		: obj.tick			!== undefined ? obj.tick		: undefined
+			, done		: obj.done			!== undefined ? obj.done		: undefined
+		}
+
+		this.ele('.__actionDescription').innerHTML = this.template('actionDescription', '"'+player.action.description+'"');
+	}
+});
+
 choco.fun('updateLoop', function () {
 	var now = +(new Date);
 	var player = this.gameData.player;
